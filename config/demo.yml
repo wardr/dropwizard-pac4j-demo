@@ -1,0 +1,13 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 8080
+
+logging:
+  level: INFO
+
+database:
+  driverClass: com.mysql.jdbc.Driver
+  user: demo_user
+  password: demopassword
+  url: jdbc:mysql://localhost:3306/demo
