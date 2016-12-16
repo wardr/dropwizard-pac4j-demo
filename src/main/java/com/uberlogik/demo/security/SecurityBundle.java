@@ -1,8 +1,8 @@
 package com.uberlogik.demo.security;
 
+import com.uberlogik.pac4j.matching.UrlPathMatcher;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
-import io.dropwizard.jersey.sessions.HttpSessionFactory;
 import io.dropwizard.jetty.MutableServletContextHandler;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -75,7 +75,7 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         // require authentication everywhere, except for whitelisted paths
 
         final String matcherName = "authPathMatcher";
-        AuthPathMatcher matcher = new AuthPathMatcher();
+        UrlPathMatcher matcher = new UrlPathMatcher();
         matcher.addExcludedPath("/");
         matcher.addExcludedPath("/login");
         matcher.addExcludedPath("/callback");

@@ -1,4 +1,4 @@
-package com.uberlogik.demo.security;
+package com.uberlogik.pac4j.auth;
 
 import org.pac4j.core.exception.CredentialsException;
 

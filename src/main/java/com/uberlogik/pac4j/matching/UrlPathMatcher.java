@@ -1,4 +1,4 @@
-package com.uberlogik.demo.security;
+package com.uberlogik.pac4j.matching;
 
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
@@ -8,7 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class AuthPathMatcher implements Matcher
+
+public class UrlPathMatcher implements Matcher
 {
     // matching via hashes is more efficient than using a Regex
     private final Set<String> excludedPaths = new HashSet<String>();
@@ -31,7 +32,7 @@ public class AuthPathMatcher implements Matcher
     }
 
     /**
-     * Any path matching this regex will be excluded. Regexes are expensive to try to use them sparingly.
+     * Any path matching this regex will be excluded.
      */
     public void addExcludedRegex(String regex)
     {
@@ -44,6 +45,9 @@ public class AuthPathMatcher implements Matcher
         return matches(context.getPath());
     }
 
+    /**
+     * Returns true if a path should be authenticated, false to skip authentication.
+     */
     boolean matches(String path)
     {
         if (excludedPaths.contains(path))

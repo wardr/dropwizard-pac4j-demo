@@ -1,5 +1,6 @@
 package com.uberlogik.demo.data;
 
+
 public class User
 {
     private int id;

@@ -1,4 +1,4 @@
-package com.uberlogik.demo.security;
+package com.uberlogik.pac4j.auth;
 
 import com.google.common.io.BaseEncoding;
 import org.pac4j.core.exception.TechnicalException;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 /**
  * Base64 encoded password hash and salt.
  */
-class SaltedPassword
+public class SaltedPassword
 {
     private static final Logger LOG = LoggerFactory.getLogger(SaltedPassword.class);
     private static final int SALT_SIZE = 16; //16 bytes == 128 bits
