@@ -11,3 +11,17 @@ database:
   user: demo_user
   password: demopassword
   url: jdbc:mysql://localhost:3306/demo
+
+jooq:
+  dialect: MYSQL
+  logExecutedSql: yes
+  renderSchema: yes
+  renderNameStyle: QUOTED
+  renderKeywordStyle: LOWER
+  renderFormatted: no
+  paramType: INDEXED
+  statementType: PREPARED_STATEMENT
+  executeLogging: no
+  executeWithOptimisticLocking: no
+  attachRecords: yes
+  updatablePrimaryKeys: no

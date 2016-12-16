@@ -8,7 +8,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-
+/**
+ * Matcher for URL paths.
+ *
+ * @Author Rob Ward
+ */
 public class UrlPathMatcher implements Matcher
 {
     // matching via hashes is more efficient than using a Regex
@@ -45,9 +49,7 @@ public class UrlPathMatcher implements Matcher
         return matches(context.getPath());
     }
 
-    /**
-     * Returns true if a path should be authenticated, false to skip authentication.
-     */
+    // Returns true if a path should be authenticated, false to skip authentication.
     boolean matches(String path)
     {
         if (excludedPaths.contains(path))

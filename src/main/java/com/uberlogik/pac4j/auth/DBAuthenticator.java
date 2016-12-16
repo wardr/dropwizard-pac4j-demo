@@ -14,6 +14,8 @@ import java.util.Collection;
 
 /**
  * Enables use of local database via your preferred method (JOOQ, JDBI, JDBC or an ORM)
+ *
+ * @Author Rob Ward
  */
 public abstract class DBAuthenticator<T> extends InitializableWebObject implements Authenticator<UsernamePasswordCredentials>
 {

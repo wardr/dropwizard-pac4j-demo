@@ -1,5 +1,6 @@
 package com.uberlogik.demo;
 
+import com.bendb.dropwizard.jooq.JooqFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
@@ -10,18 +11,20 @@ import javax.validation.constraints.NotNull;
 
 public class DemoConfiguration extends Configuration
 {
-    @Valid
+    @JsonProperty
     @NotNull
-    private DataSourceFactory database = new DataSourceFactory();
+    private JooqFactory jooq = new JooqFactory(); // Defaults are acceptable
 
-    @JsonProperty("database")
-    public void setDataSourceFactory(DataSourceFactory factory)
+    @JsonProperty
+    @NotNull
+    private DataSourceFactory database;
+
+    public JooqFactory jooq()
     {
-        this.database = factory;
+        return jooq;
     }
 
-    @JsonProperty("database")
-    public DataSourceFactory getDataSourceFactory()
+    public DataSourceFactory dataSourceFactory()
     {
         return database;
     }

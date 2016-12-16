@@ -1,18 +1,37 @@
 package com.uberlogik.demo;
 
+import com.bendb.dropwizard.jooq.JooqBundle;
+import com.bendb.dropwizard.jooq.JooqFactory;
 import com.uberlogik.demo.client.resources.RootResource;
 import com.uberlogik.demo.client.resources.UserResource;
 import com.uberlogik.demo.security.SecurityBundle;
 import io.dropwizard.Application;
-import io.dropwizard.jdbi.DBIFactory;
+import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
-import org.skife.jdbi.v2.DBI;
 
 public class DemoApplication extends Application<DemoConfiguration>
 {
     private final SecurityBundle<DemoConfiguration> securityBundle = new SecurityBundle<DemoConfiguration>();
+
+    final JooqBundle<DemoConfiguration> dbBundle = new JooqBundle<DemoConfiguration>()
+    {
+        /**
+         * Required override to define default DataSourceFactory.
+         */
+        @Override
+        public DataSourceFactory getDataSourceFactory(DemoConfiguration configuration)
+        {
+            return configuration.dataSourceFactory();
+        }
+
+        @Override
+        public JooqFactory getJooqFactory(DemoConfiguration configuration)
+        {
+            return configuration.jooq();
+        }
+    };
 
 
     public static void main(String[] args) throws Exception
@@ -36,9 +55,7 @@ public class DemoApplication extends Application<DemoConfiguration>
     @Override
     public void run(DemoConfiguration config, Environment env) throws Exception
     {
-        final DBIFactory factory = new DBIFactory();
-        final DBI jdbi = factory.build(env, config.getDataSourceFactory(), "mysql");
-        securityBundle.build(env, jdbi);
+        securityBundle.build(env, dbBundle.getConfiguration());
 
         // HTML Pages
         env.jersey().register(new RootResource());

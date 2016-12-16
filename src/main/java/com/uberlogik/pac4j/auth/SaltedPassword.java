@@ -12,6 +12,8 @@ import java.util.Arrays;
 
 /**
  * Base64 encoded password hash and salt.
+ *
+ * @Author Rob Ward
  */
 public class SaltedPassword
 {

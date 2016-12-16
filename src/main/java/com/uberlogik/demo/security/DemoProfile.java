@@ -1,6 +1,6 @@
 package com.uberlogik.demo.security;
 
-import com.uberlogik.demo.data.User;
+import com.uberlogik.demo.db.tables.pojos.User;
 import org.pac4j.core.context.Pac4jConstants;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.Gender;
@@ -15,7 +15,7 @@ public class DemoProfile extends CommonProfile
         DemoProfile profile = new DemoProfile();
 
         // mandatory fields
-        profile.setId(user.getId());
+        profile.setId(user.getUserId());
         profile.setClientName(clientName);
         profile.setRemembered(false); // i.e. is fully authenticated, not just "remembered"
 

@@ -31,23 +31,24 @@
         </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-jdbi</artifactId>
-            <version>${dropwizard.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-views</artifactId>
-            <version>${dropwizard.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-views-mustache</artifactId>
             <version>${dropwizard.version}</version>
         </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${driver.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.bendb.dropwizard</groupId>
+            <artifactId>dropwizard-jooq</artifactId>
+            <version>1.0.0-2</version>
         </dependency>
 
         <dependency>
@@ -77,6 +78,56 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jooq.version}</version>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>${driver.version}</version>
+                    </dependency>
+
+                </dependencies>
+
+                <configuration>
+                    <jdbc>
+                        <driver>com.mysql.jdbc.Driver</driver>
+                        <url>jdbc:mysql://localhost:3306/demo</url>
+                        <user>demo_user</user>
+                        <password>demopassword</password>
+                    </jdbc>
+
+                    <generator>
+                        <name>org.jooq.util.DefaultGenerator</name>
+                        <generate>
+                            <!-- see section 6.2 of docs for additional options -->
+                            <deprecated>false</deprecated>
+                            <pojos>true</pojos>
+                            <daos>true</daos>
+                        </generate>
+                        <database>
+                            <name>org.jooq.util.mysql.MySQLDatabase</name>
+                            <includes>.*</includes>
+                            <inputSchema>demo</inputSchema>
+                        </database>
+                        <target>
+                            <packageName>com.uberlogik.demo.db</packageName>
+                            <directory>target/generated-sources/jooq</directory>
+                        </target>
+                    </generator>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.3</version>

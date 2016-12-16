@@ -18,7 +18,6 @@ import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 import org.pac4j.jax.rs.pac4j.JaxRsCallbackUrlResolver;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
 import org.pac4j.jax.rs.servlet.pac4j.ServletSessionStore;
-import org.skife.jdbi.v2.DBI;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,7 +56,7 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         // see build method
     }
 
-    public void build(Environment environment, DBI jdbi)
+    public void build(Environment environment, org.jooq.Configuration jooqConfig)
     {
         // Dropwizard does not enable sessions by default, so add a session handler
         MutableServletContextHandler contextHandler = environment.getApplicationContext();
@@ -86,7 +85,7 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
                         "isAuthenticated", null,
                         "authPathMatcher", null));
 
-        JDBIAuthenticator authenticator = new JDBIAuthenticator(jdbi);
+        JooqAuthenticator authenticator = new JooqAuthenticator(jooqConfig);
         FormClient formClient = new FormClient("/login", authenticator);
         formClient.setCallbackUrl("/callback");
 
