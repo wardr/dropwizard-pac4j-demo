@@ -63,7 +63,6 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         MutableServletContextHandler contextHandler = environment.getApplicationContext();
         contextHandler.setSessionHandler(new SessionHandler());
         contextHandler.getServletContext().getSessionCookieConfig().setName(SESSION_KEY);
-        environment.jersey().register(HttpSessionFactory.class);
 
         // pac4j configuration
 

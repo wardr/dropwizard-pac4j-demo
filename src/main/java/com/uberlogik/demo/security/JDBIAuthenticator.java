@@ -6,15 +6,16 @@ import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.UsernamePasswordCredentials;
 import org.pac4j.core.credentials.authenticator.Authenticator;
 import org.pac4j.core.exception.*;
-import org.pac4j.core.profile.definition.CommonProfileDefinition;
-import org.pac4j.core.profile.definition.ProfileDefinitionAware;
+import org.pac4j.core.credentials.UsernamePasswordCredentials;
+import org.pac4j.core.util.InitializableWebObject;
 import org.skife.jdbi.v2.DBI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class JDBIAuthenticator extends ProfileDefinitionAware<DemoProfile> implements Authenticator<UsernamePasswordCredentials>
+// reverted to be compatible with pac4j 1.9.x
+public class JDBIAuthenticator extends InitializableWebObject implements Authenticator<UsernamePasswordCredentials>
 {
     private static final Logger LOG = LoggerFactory.getLogger(JDBIAuthenticator.class);
     private final DBI jdbi;
@@ -25,9 +26,9 @@ public class JDBIAuthenticator extends ProfileDefinitionAware<DemoProfile> imple
     }
 
     @Override
-    protected void internalInit(final WebContext webContext)
+    protected void internalInit(final WebContext context)
     {
-        setProfileDefinition(new CommonProfileDefinition<>(x -> new DemoProfile()));
+        // no-op
     }
 
     @Override
@@ -72,4 +73,6 @@ public class JDBIAuthenticator extends ProfileDefinitionAware<DemoProfile> imple
             throw new BadCredentialsException("Invalid credentials for: " + username);
         }
     }
+
+
 }

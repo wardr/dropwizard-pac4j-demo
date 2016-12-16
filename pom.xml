@@ -14,7 +14,7 @@
         <mainClass>com.uberlogik.demo.DemoApplication</mainClass>
         <jooq.version>3.8.6</jooq.version>
         <driver.version>5.1.40</driver.version>
-        <pac4j.version>2.0.0-SNAPSHOT</pac4j.version>
+        <pac4j.version>1.9.4</pac4j.version>
     </properties>
 
     <dependencies>
@@ -74,26 +74,6 @@
         </dependency>
 
     </dependencies>
-
-    <!-- We need the development version of pac4j -->
-    <repositories>
-        <repository>
-            <id>sonatype-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>sonatype-plugin-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 
     <build>
         <plugins>
