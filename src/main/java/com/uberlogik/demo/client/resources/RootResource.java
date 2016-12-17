@@ -6,9 +6,7 @@ import com.uberlogik.demo.security.DemoProfile;
 import io.dropwizard.views.View;
 import org.pac4j.jax.rs.annotations.Pac4JCallback;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;

@@ -28,19 +28,4 @@ public class DemoConfiguration extends Configuration
     {
         return database;
     }
-
-    @NotNull
-    Pac4jFactory pac4jFactory = new Pac4jFactory();
-
-    @JsonProperty("pac4j")
-    public Pac4jFactory getPac4jFactory()
-    {
-        return pac4jFactory;
-    }
-
-    @JsonProperty("pac4j")
-    public void setPac4jFactory(Pac4jFactory pac4jFactory)
-    {
-        this.pac4jFactory = pac4jFactory;
-    }
 }
