@@ -2,17 +2,16 @@ package com.uberlogik.demo.client.resources;
 
 import com.uberlogik.demo.client.views.BaseView;
 import com.uberlogik.demo.client.views.LoginView;
-import com.uberlogik.demo.security.DemoProfile;
 import io.dropwizard.views.View;
 import org.pac4j.jax.rs.annotations.Pac4JCallback;
-import org.pac4j.jax.rs.annotations.Pac4JProfile;
+import org.pac4j.jax.rs.annotations.Pac4JLogout;
+import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
 
 @Path("/")
 public class RootResource
@@ -29,28 +28,35 @@ public class RootResource
     @Produces({MediaType.TEXT_HTML})
     public View login()
     {
-        // TODO: how do we get hold of formClient.getCallbackUrl()?
         return new LoginView("/callback");
     }
 
-    // just something simple to handle the pac4j callback for now
     @POST
     @Path("/callback")
-    @Pac4JCallback
-    @Produces({MediaType.TEXT_HTML})
-    public Response home(@Pac4JProfile DemoProfile profile)
+    @Pac4JCallback(multiProfile = false, renewSession = false, defaultUrl = "/")
+    public void callbackPost()
     {
-        if (profile != null)
-        {
-            URI uri = UriBuilder.fromPath("/").build();
-            return Response.seeOther(uri).build();
+        // nothing to do here, pac4j handles everything
+        // note that in jax-rs, you can't have two different http method on the
+        // same resource method hence the duplication
+    }
 
-        }
-        else
-        {
-            // TODO: redirect to a login failed page
-            throw new WebApplicationException(401);
-        }
+    @GET
+    @Path("/callback")
+    @Pac4JCallback(multiProfile = false, renewSession = false, defaultUrl = "/")
+    public void callbackGet()
+    {
+        // nothing to do here, pac4j handles everything
+        // note that in jax-rs, you can't have two different http method on the
+        // same resource method hence the duplication
+    }
+
+    @GET
+    @Path("/logout")
+    @Pac4JLogout(defaultUrl = "/")
+    public void logout()
+    {
+        // nothing to do here, pac4j handles everything
     }
 
     // Example of a page that only authenticated AND authorized users can access
@@ -60,6 +66,7 @@ public class RootResource
     @Produces({MediaType.TEXT_HTML})
     public View admin()
     {
+
         return new BaseView("/com/uberlogik/demo/client/views/admin.mustache");
     }
 
