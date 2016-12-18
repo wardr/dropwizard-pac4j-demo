@@ -28,7 +28,7 @@ public class RootResource
     @Produces({MediaType.TEXT_HTML})
     public View login()
     {
-        return new LoginView("/callback");
+        return new LoginView("/callback?client_name=FormClient");
     }
 
     @POST

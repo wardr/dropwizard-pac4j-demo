@@ -49,6 +49,7 @@ public class DemoApplication extends Application<DemoConfiguration>
     public void initialize(Bootstrap<DemoConfiguration> bootstrap)
     {
         bootstrap.addBundle(new ViewBundle<DemoConfiguration>());
+        bootstrap.addBundle(dbBundle);
         bootstrap.addBundle(securityBundle);
     }
 

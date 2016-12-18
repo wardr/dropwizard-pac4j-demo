@@ -21,6 +21,7 @@ public abstract class DBAuthenticator<T> extends InitializableWebObject implemen
 {
     private static final Logger LOG = LoggerFactory.getLogger(DBAuthenticator.class);
 
+
     @Override
     public void validate(final UsernamePasswordCredentials credentials, final WebContext context)
             throws HttpAction, CredentialsException
@@ -31,22 +32,22 @@ public abstract class DBAuthenticator<T> extends InitializableWebObject implemen
 
         if (username == null || username.isEmpty())
         {
-            throw new BadCredentialsException(labelNoUsername());
+            throw new BadCredentialsException(errorNoUsername());
         }
 
         Collection<T> users = getUsers(username);
 
         if (users.isEmpty())
         {
-            throw new AccountNotFoundException(labelNoSuchUser(username));
+            throw new AccountNotFoundException(errorNoSuchUser());
         }
 
         if (users.size() > 1)
         {
             // should never get here
-            String msg = labelMultipleUsers(username);
+            String msg = "More than one user for [username: " + username + "] found. Username must be unique.";
             LOG.error(msg);
-            throw new MultipleAccountsFoundException(msg);
+            throw new MultipleAccountsFoundException("Username not unique");
         }
 
         T user = users.iterator().next();
@@ -54,11 +55,13 @@ public abstract class DBAuthenticator<T> extends InitializableWebObject implemen
         SaltedPassword password = saltedPassword(user);
         if (password.matches(credentials.getPassword()))
         {
+            loginSuccessful(user);
             credentials.setUserProfile(profileOf(user, credentials.getClientName()));
         }
         else
         {
-            throw new BadCredentialsException(labelBadPassword(username));
+            loginFailed(user);
+            throw new BadCredentialsException(errorBadPassword());
         }
     }
 
@@ -68,25 +71,30 @@ public abstract class DBAuthenticator<T> extends InitializableWebObject implemen
 
     protected abstract CommonProfile profileOf(T user, String clientName);
 
+    /**
+     * Override this method to perform an action after a successful login, e.g. recording a login event.
+     */
+    protected void loginSuccessful(T user) {}
+
+    /**
+     * Override this method to perform an action after a failed login, e.g. throttling failed logins
+     */
+    protected void loginFailed(T user) {}
+
     // optionally override these to customize error messages
 
-    protected String labelNoUsername()
+    protected String errorNoUsername()
     {
         return "Username required";
     }
 
-    protected String labelNoSuchUser(String username)
+    protected String errorNoSuchUser()
     {
-        return "Invalid account";
+        return "Invalid account.";
     }
 
-    protected String labelMultipleUsers(String username)
+    protected String errorBadPassword()
     {
-        return "More than one user [username: " + username + "] found. Username must be unique.";
-    }
-
-    protected String labelBadPassword(String username)
-    {
-        return "Invalid credentials for: " + username;
+        return "Login failed";
     }
 }

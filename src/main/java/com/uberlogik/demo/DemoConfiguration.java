@@ -13,19 +13,22 @@ public class DemoConfiguration extends Configuration
 {
     @JsonProperty
     @NotNull
-    private JooqFactory jooq = new JooqFactory(); // Defaults are acceptable
+    private DataSourceFactory database;
+
+    public DataSourceFactory dataSourceFactory()
+    {
+        return database;
+    }
 
     @JsonProperty
     @NotNull
-    private DataSourceFactory database;
+    private JooqFactory jooq = new JooqFactory(); // Defaults are acceptable
 
     public JooqFactory jooq()
     {
         return jooq;
     }
 
-    public DataSourceFactory dataSourceFactory()
-    {
-        return database;
-    }
+
+
 }

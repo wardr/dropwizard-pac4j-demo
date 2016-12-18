@@ -80,11 +80,6 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         matcher.addExcludedPath("/callback");
         config.addMatcher(matcherName, matcher);
 
-        environment.jersey()
-                .register(new Pac4JSecurityFilterFeature(config, null,
-                        "isAuthenticated", null,
-                        "authPathMatcher", null));
-
         JooqAuthenticator authenticator = new JooqAuthenticator(jooqConfig);
         FormClient formClient = new FormClient("/login", authenticator);
         formClient.setCallbackUrl("/callback");
@@ -92,6 +87,13 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         Clients clients = new Clients(formClient);
         clients.setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
         config.setClients(clients);
+
+        environment.jersey()
+                .register(new Pac4JSecurityFilterFeature(config, null,
+                        "isAuthenticated", "FormClient",
+                        "authPathMatcher", null));
+
+
 
         // TODO: Authorization
     }
