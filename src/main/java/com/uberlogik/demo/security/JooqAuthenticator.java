@@ -34,8 +34,7 @@ public class JooqAuthenticator extends DBAuthenticator<User>
     @Override
     protected Collection<User> getUsers(String username)
     {
-        DSLContext dsl = DSL.using(jooqConfig);
-        return dsl.selectFrom(USER)
+        return DSL.using(jooqConfig).selectFrom(USER)
                 .where(USER.EMAIL.eq(username.toLowerCase()))
                 .fetch().into(User.class);
     }

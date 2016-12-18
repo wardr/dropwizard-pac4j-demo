@@ -16,6 +16,13 @@ import javax.ws.rs.core.MediaType;
 @Path("/")
 public class RootResource
 {
+    final String formClientUrl;
+
+    public RootResource(String formClientUrl)
+    {
+        this.formClientUrl = formClientUrl;
+    }
+
     @GET
     @Produces({MediaType.TEXT_HTML})
     public View home()
@@ -28,7 +35,7 @@ public class RootResource
     @Produces({MediaType.TEXT_HTML})
     public View login()
     {
-        return new LoginView("/callback?client_name=FormClient");
+        return new LoginView(formClientUrl);
     }
 
     @POST

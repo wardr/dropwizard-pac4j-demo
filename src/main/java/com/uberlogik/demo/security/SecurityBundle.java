@@ -26,6 +26,10 @@ import java.util.Collection;
 public class SecurityBundle<T extends Configuration> implements ConfiguredBundle<T>
 {
     public static final String SESSION_KEY = "s";
+    private static final String FORM_CLIENT_CALLBACK = "/callback";
+    private static final String FORM_CLIENT_NAME = "form";
+
+
     private Config config;
 
     public Config getConfig()
@@ -47,6 +51,11 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         ArrayList<Pac4jFeatureSupport> res = new ArrayList<>();
         res.add(new DefaultFeatureSupport());
         return res;
+    }
+
+    public String getFormClientURl()
+    {
+        return FORM_CLIENT_CALLBACK + "?client_name=" + FORM_CLIENT_NAME;
     }
 
     @Override
@@ -77,12 +86,13 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         UrlPathMatcher matcher = new UrlPathMatcher();
         matcher.addExcludedPath("/");
         matcher.addExcludedPath("/login");
-        matcher.addExcludedPath("/callback");
+        matcher.addExcludedPath(FORM_CLIENT_CALLBACK);
         config.addMatcher(matcherName, matcher);
 
         JooqAuthenticator authenticator = new JooqAuthenticator(jooqConfig);
         FormClient formClient = new FormClient("/login", authenticator);
-        formClient.setCallbackUrl("/callback");
+        formClient.setName(FORM_CLIENT_NAME);
+        formClient.setCallbackUrl(FORM_CLIENT_CALLBACK);
 
         Clients clients = new Clients(formClient);
         clients.setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
@@ -90,10 +100,8 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
 
         environment.jersey()
                 .register(new Pac4JSecurityFilterFeature(config, null,
-                        "isAuthenticated", "FormClient",
+                        "isAuthenticated", FORM_CLIENT_NAME,
                         "authPathMatcher", null));
-
-
 
         // TODO: Authorization
     }
