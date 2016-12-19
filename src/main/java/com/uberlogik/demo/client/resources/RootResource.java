@@ -43,9 +43,7 @@ public class RootResource
     @Pac4JCallback(multiProfile = false, renewSession = false, defaultUrl = "/")
     public void callbackPost()
     {
-        // nothing to do here, pac4j handles everything
-        // note that in jax-rs, you can't have two different http method on the
-        // same resource method hence the duplication
+        // nothing to do; pac4j handles everything
     }
 
     @GET
@@ -53,9 +51,7 @@ public class RootResource
     @Pac4JCallback(multiProfile = false, renewSession = false, defaultUrl = "/")
     public void callbackGet()
     {
-        // nothing to do here, pac4j handles everything
-        // note that in jax-rs, you can't have two different http method on the
-        // same resource method hence the duplication
+        // nothing to do; pac4j handles everything
     }
 
     @GET
@@ -63,17 +59,17 @@ public class RootResource
     @Pac4JLogout(defaultUrl = "/")
     public void logout()
     {
-        // nothing to do here, pac4j handles everything
+        // nothing to do; pac4j handles everything
     }
 
     // Example of a page that only authenticated AND authorized users can access
     // TODO: add authorization
     @GET
     @Path("/admin")
+    @Pac4JSecurity(authorizers = "superuser")
     @Produces({MediaType.TEXT_HTML})
     public View admin()
     {
-
         return new BaseView("/com/uberlogik/demo/client/views/admin.mustache");
     }
 

@@ -7,6 +7,7 @@ import io.dropwizard.jetty.MutableServletContextHandler;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.pac4j.core.authorization.authorizer.RequireAnyRoleAuthorizer;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.dropwizard.DefaultFeatureSupport;
@@ -89,10 +90,16 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         matcher.addExcludedPath(FORM_CLIENT_CALLBACK);
         config.addMatcher(matcherName, matcher);
 
+        // TODO: can we add an authorizer that can check an arbitrary role?
+        config.addAuthorizer("superuser", new RequireAnyRoleAuthorizer<>("superuser"));
+
         JooqAuthenticator authenticator = new JooqAuthenticator(jooqConfig);
         FormClient formClient = new FormClient("/login", authenticator);
         formClient.setName(FORM_CLIENT_NAME);
         formClient.setCallbackUrl(FORM_CLIENT_CALLBACK);
+
+        // authorization information is present in profile, so generator is a no-op
+        formClient.addAuthorizationGenerator(profile -> {});
 
         Clients clients = new Clients(formClient);
         clients.setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
@@ -103,6 +110,5 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
                         "isAuthenticated", FORM_CLIENT_NAME,
                         "authPathMatcher", null));
 
-        // TODO: Authorization
     }
 }

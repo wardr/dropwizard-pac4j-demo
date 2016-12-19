@@ -1,19 +1,22 @@
 package com.uberlogik.demo.security;
 
 import com.uberlogik.demo.db.tables.pojos.User;
+import com.uberlogik.demo.db.tables.records.UserPermissionRecord;
 import com.uberlogik.pac4j.auth.DBAuthenticator;
 import com.uberlogik.pac4j.auth.SaltedPassword;
 import org.jooq.Configuration;
 import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.jooq.impl.DSL;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.profile.CommonProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
+import java.util.*;
 
 import static com.uberlogik.demo.db.Tables.USER;
+import static com.uberlogik.demo.db.Tables.USER_PERMISSION;
 
 public class JooqAuthenticator extends DBAuthenticator<User>
 {
@@ -45,10 +48,37 @@ public class JooqAuthenticator extends DBAuthenticator<User>
         return SaltedPassword.of(user.getPwd(), user.getPwdSalt());
     }
 
-    @Override
-    protected CommonProfile profileOf(User user, String clientName)
+    protected Map<String, Set<String>> getRolePermissions(User user)
     {
-        return DemoProfile.of(user, clientName);
+        Map<String, Set<String>> result = new HashMap<>();
+
+        Result<UserPermissionRecord> records = DSL.using(jooqConfig).selectFrom(USER_PERMISSION)
+                .where(USER_PERMISSION.USER_ID.eq(user.getUserId()))
+                .fetch();
+
+        for (UserPermissionRecord record : records)
+        {
+            String role = record.getRoleName();
+            if (result.containsKey(role))
+            {
+                Set<String> permissions = result.get(role);
+                permissions.add(record.getPermissionName());
+            }
+            else
+            {
+                Set<String> permissions = new HashSet<>();
+                permissions.add(record.getPermissionName());
+                result.put(role, permissions);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    protected CommonProfile profileOf(User user, Map<String, Set<String>> rolePermissions, String clientName)
+    {
+        return DemoProfile.of(user, rolePermissions, clientName);
     }
 
     @Override

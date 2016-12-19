@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Enables use of local database via your preferred method (JOOQ, JDBI, JDBC or an ORM)
@@ -56,7 +58,9 @@ public abstract class DBAuthenticator<T> extends InitializableWebObject implemen
         if (password.matches(credentials.getPassword()))
         {
             loginSuccessful(user);
-            credentials.setUserProfile(profileOf(user, credentials.getClientName()));
+            Map<String, Set<String>> rolePermissions = getRolePermissions(user);
+            credentials.setUserProfile(profileOf(user, rolePermissions, credentials.getClientName()));
+
         }
         else
         {
@@ -69,7 +73,14 @@ public abstract class DBAuthenticator<T> extends InitializableWebObject implemen
 
     protected abstract SaltedPassword saltedPassword(T user);
 
-    protected abstract CommonProfile profileOf(T user, String clientName);
+    /**
+     * Returns a Map, with contents:
+     *   Key: role name
+     *   Value: set of permissions for the associated role
+     */
+    protected abstract Map<String, Set<String>> getRolePermissions(T user);
+
+    protected abstract CommonProfile profileOf(T user, Map<String, Set<String>> rolePermissions, String clientName);
 
     /**
      * Override this method to perform an action after a successful login, e.g. recording a login event.
