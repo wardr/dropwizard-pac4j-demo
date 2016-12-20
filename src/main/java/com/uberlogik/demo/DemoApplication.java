@@ -2,7 +2,9 @@ package com.uberlogik.demo;
 
 import com.bendb.dropwizard.jooq.JooqBundle;
 import com.bendb.dropwizard.jooq.JooqFactory;
+import com.uberlogik.demo.client.resources.ErrorResource;
 import com.uberlogik.demo.client.resources.RootResource;
+import com.uberlogik.demo.client.resources.RuntimeExceptionMapper;
 import com.uberlogik.demo.client.resources.UserResource;
 import com.uberlogik.demo.security.SecurityBundle;
 import io.dropwizard.Application;
@@ -10,6 +12,7 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
+import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 
 public class DemoApplication extends Application<DemoConfiguration>
 {
@@ -61,5 +64,23 @@ public class DemoApplication extends Application<DemoConfiguration>
         // HTML Pages
         env.jersey().register(new RootResource(securityBundle.getFormClientURl()));
         env.jersey().register(new UserResource());
+        registerErrorHandlers(env);
+
+    }
+
+    private void registerErrorHandlers(Environment env)
+    {
+        env.jersey().register(new ErrorResource());
+
+        // handles HTTP 404, 500, etc errors
+        env.jersey().register(RuntimeExceptionMapper.class);
+
+        final ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
+        // 400 - Bad Request, leave alone
+        errorHandler.addErrorPage(401, "/error/401");
+        errorHandler.addErrorPage(403, "/error/403");
+        errorHandler.addErrorPage(404, "/error/404");
+        errorHandler.addErrorPage(500, 599, "/error/500");
+        env.getApplicationContext().setErrorHandler(errorHandler);
     }
 }
