@@ -1,12 +1,13 @@
 package com.uberlogik.demo.security;
 
-import com.uberlogik.pac4j.matching.UrlPathMatcher;
+import com.uberlogik.pac4j.matching.PathMatcher;
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.jetty.MutableServletContextHandler;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.pac4j.core.authorization.authorizer.RequireAnyPermissionAuthorizer;
 import org.pac4j.core.authorization.authorizer.RequireAnyRoleAuthorizer;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
@@ -84,21 +85,24 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         // require authentication everywhere, except for whitelisted paths
 
         final String matcherName = "authPathMatcher";
-        UrlPathMatcher matcher = new UrlPathMatcher();
-        matcher.addExcludedPath("/");
-        matcher.addExcludedPath("/login");
-        matcher.addExcludedPath(FORM_CLIENT_CALLBACK);
+        PathMatcher matcher = new PathMatcher()
+                .excludePath("/")
+                .excludePath("/login")
+                .excludePath(FORM_CLIENT_CALLBACK);
+
         config.addMatcher(matcherName, matcher);
 
         // TODO: can we add an authorizer that can check an arbitrary role?
         config.addAuthorizer("superuser", new RequireAnyRoleAuthorizer<>("superuser"));
+
+        //config.addAuthorizer("accessAdmin", new RequireAnyPermissionAuthorizer("admin:all"));
 
         JooqAuthenticator authenticator = new JooqAuthenticator(jooqConfig);
         FormClient formClient = new FormClient("/login", authenticator);
         formClient.setName(FORM_CLIENT_NAME);
         formClient.setCallbackUrl(FORM_CLIENT_CALLBACK);
 
-        // authorization information is present in profile, so generator is a no-op
+        // authorization information is already present in profile, so nothing to do
         formClient.addAuthorizationGenerator(profile -> {});
 
         Clients clients = new Clients(formClient);

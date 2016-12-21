@@ -63,10 +63,11 @@ public class RootResource
     }
 
     // Example of a page that only authenticated AND authorized users can access
-    // TODO: add authorization
     @GET
     @Path("/admin")
     @Pac4JSecurity(authorizers = "superuser")
+    //@Pac4JSecurity(authorizers = "isAuthenticated, superuser")
+    //@Pac4JSecurity(authorizers = "accessAdmin")
     @Produces({MediaType.TEXT_HTML})
     public View admin()
     {
