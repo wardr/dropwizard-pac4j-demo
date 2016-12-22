@@ -7,7 +7,6 @@ import io.dropwizard.jetty.MutableServletContextHandler;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.server.session.SessionHandler;
-import org.pac4j.core.authorization.authorizer.RequireAnyPermissionAuthorizer;
 import org.pac4j.core.authorization.authorizer.RequireAnyRoleAuthorizer;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
@@ -39,6 +38,11 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         return config;
     }
 
+    public FormClient getFormClient()
+    {
+        return (FormClient) config.getClients().findClient(FORM_CLIENT_NAME);
+    }
+
     @Override
     public final void initialize(Bootstrap<?> bootstrap)
     {
@@ -53,11 +57,6 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         ArrayList<Pac4jFeatureSupport> res = new ArrayList<>();
         res.add(new DefaultFeatureSupport());
         return res;
-    }
-
-    public String getFormClientURl()
-    {
-        return FORM_CLIENT_CALLBACK + "?client_name=" + FORM_CLIENT_NAME;
     }
 
     @Override
@@ -92,20 +91,14 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
 
         config.addMatcher(matcherName, matcher);
 
-        // TODO: can we add an authorizer that can check an arbitrary role?
+        // TODO: implement @HasRole and @HasPermission annotations
         config.addAuthorizer("superuser", new RequireAnyRoleAuthorizer<>("superuser"));
-
-        //config.addAuthorizer("accessAdmin", new RequireAnyPermissionAuthorizer("admin:all"));
 
         JooqAuthenticator authenticator = new JooqAuthenticator(jooqConfig);
         FormClient formClient = new FormClient("/login", authenticator);
         formClient.setName(FORM_CLIENT_NAME);
-        formClient.setCallbackUrl(FORM_CLIENT_CALLBACK);
 
-        // authorization information is already present in profile, so nothing to do
-        formClient.addAuthorizationGenerator(profile -> {});
-
-        Clients clients = new Clients(formClient);
+        Clients clients = new Clients(FORM_CLIENT_CALLBACK, formClient);
         clients.setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
         config.setClients(clients);
 

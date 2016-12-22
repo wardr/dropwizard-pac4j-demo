@@ -62,7 +62,7 @@ public class DemoApplication extends Application<DemoConfiguration>
         securityBundle.build(env, dbBundle.getConfiguration());
 
         // HTML Pages
-        env.jersey().register(new RootResource(securityBundle.getFormClientURl()));
+        env.jersey().register(new RootResource(securityBundle.getFormClient()));
         env.jersey().register(new UserResource());
         registerErrorHandlers(env);
 

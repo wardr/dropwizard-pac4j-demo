@@ -3,6 +3,7 @@ package com.uberlogik.demo.client.resources;
 import com.uberlogik.demo.client.views.BaseView;
 import com.uberlogik.demo.client.views.LoginView;
 import io.dropwizard.views.View;
+import org.pac4j.http.client.indirect.FormClient;
 import org.pac4j.jax.rs.annotations.Pac4JCallback;
 import org.pac4j.jax.rs.annotations.Pac4JLogout;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
@@ -16,11 +17,11 @@ import javax.ws.rs.core.MediaType;
 @Path("/")
 public class RootResource
 {
-    final String formClientUrl;
+    final FormClient formClient;
 
-    public RootResource(String formClientUrl)
+    public RootResource(FormClient formClient)
     {
-        this.formClientUrl = formClientUrl;
+        this.formClient = formClient;
     }
 
     @GET
@@ -35,7 +36,7 @@ public class RootResource
     @Produces({MediaType.TEXT_HTML})
     public View login()
     {
-        return new LoginView(formClientUrl);
+        return new LoginView(formClient);
     }
 
     @POST
@@ -66,8 +67,6 @@ public class RootResource
     @GET
     @Path("/admin")
     @Pac4JSecurity(authorizers = "superuser")
-    //@Pac4JSecurity(authorizers = "isAuthenticated, superuser")
-    //@Pac4JSecurity(authorizers = "accessAdmin")
     @Produces({MediaType.TEXT_HTML})
     public View admin()
     {
