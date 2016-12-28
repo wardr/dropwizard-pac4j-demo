@@ -29,6 +29,7 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
     public static final String SESSION_KEY = "s";
     private static final String FORM_CLIENT_CALLBACK = "/callback";
     private static final String FORM_CLIENT_NAME = "form";
+    private static final String PATH_MATCHER = "pathMatcher";
 
 
     private Config config;
@@ -81,18 +82,12 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         environment.jersey().register(new Pac4JSecurityFeature(config));
         environment.jersey().register(new Pac4JValueFactoryProvider.Binder());
 
-        // require authentication everywhere, except for whitelisted paths
-
-        final String matcherName = "authPathMatcher";
         PathMatcher matcher = new PathMatcher()
                 .excludePath("/")
                 .excludePath("/login")
+                .excludeBranch("/user")
                 .excludePath(FORM_CLIENT_CALLBACK);
-
-        config.addMatcher(matcherName, matcher);
-
-        // TODO: implement @HasRole and @HasPermission annotations
-        config.addAuthorizer("superuser", new RequireAnyRoleAuthorizer<>("superuser"));
+        config.addMatcher(PATH_MATCHER, matcher);
 
         JooqAuthenticator authenticator = new JooqAuthenticator(jooqConfig);
         FormClient formClient = new FormClient("/login", authenticator);
@@ -102,10 +97,15 @@ public class SecurityBundle<T extends Configuration> implements ConfiguredBundle
         clients.setCallbackUrlResolver(new JaxRsCallbackUrlResolver());
         config.setClients(clients);
 
+        // set a global security filter; require authentication everywhere, except for whitelisted paths.
+        // Note that authorization (roles, permissions) must be handled separately.
         environment.jersey()
                 .register(new Pac4JSecurityFilterFeature(config, null,
                         "isAuthenticated", FORM_CLIENT_NAME,
-                        "authPathMatcher", null));
+                        PATH_MATCHER, null));
+
+        // An authorizer that only allows superusers
+        config.addAuthorizer("superuser", new RequireAnyRoleAuthorizer<>(RoleName.SUPERUSER));
 
     }
 }

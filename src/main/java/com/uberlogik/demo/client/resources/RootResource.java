@@ -2,16 +2,15 @@ package com.uberlogik.demo.client.resources;
 
 import com.uberlogik.demo.client.views.BaseView;
 import com.uberlogik.demo.client.views.LoginView;
+import com.uberlogik.demo.security.UserProfile;
 import io.dropwizard.views.View;
 import org.pac4j.http.client.indirect.FormClient;
 import org.pac4j.jax.rs.annotations.Pac4JCallback;
 import org.pac4j.jax.rs.annotations.Pac4JLogout;
+import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 @Path("/")
@@ -26,9 +25,9 @@ public class RootResource
 
     @GET
     @Produces({MediaType.TEXT_HTML})
-    public View home()
+    public View home(@Pac4JProfile UserProfile profile)
     {
-        return new BaseView("/com/uberlogik/demo/client/views/index.mustache");
+        return new BaseView("/com/uberlogik/demo/client/views/index.mustache", profile);
     }
 
     @GET
@@ -65,12 +64,12 @@ public class RootResource
 
     // Example of a page that only authenticated AND authorized users can access
     @GET
-    @Path("/admin")
-    @Pac4JSecurity(authorizers = "superuser")
+    @Path("/protected")
+    @Pac4JSecurity(clients = "form", authorizers = "superuser")
     @Produces({MediaType.TEXT_HTML})
-    public View admin()
+    public View protectedExample(@Pac4JProfile UserProfile profile)
     {
-        return new BaseView("/com/uberlogik/demo/client/views/admin.mustache");
+        return new BaseView("/com/uberlogik/demo/client/views/protected.mustache", profile);
     }
 
 }

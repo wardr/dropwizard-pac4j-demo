@@ -80,6 +80,31 @@
     </style>
 </head>
 <body>
+
+<nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
+    <ul class="nav navbar-nav">
+        <li class="nav-item active">
+            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/protected">Protected</a>
+        </li>
+        {{#profile}}
+            <li class="nav-item">
+                <a class="nav-link" href="/user/{{profile.username}}">{{profile.username}}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+            </li>
+        {{/profile}}
+        {{^profile}}
+            <li class="nav-item">
+                <a class="nav-link" href="/login">Login</a>
+            </li>
+        {{/profile}}
+    </ul>
+</nav>
+
 {{$ content }}
 {{/ content }}
 

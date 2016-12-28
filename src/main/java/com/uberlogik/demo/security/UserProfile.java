@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.Set;
 
 // Maps User into a pac4j UserProfile
-public class DemoProfile extends CommonProfile
+public class UserProfile extends CommonProfile
 {
     private static final long serialVersionUID = 2696848236079309842L;
 
-    public static DemoProfile of(User user, Map<String, Set<String>> rolePermissions, String clientName)
+    public static UserProfile of(User user, Map<String, Set<String>> rolePermissions, String clientName)
     {
-        DemoProfile profile = new DemoProfile();
+        UserProfile profile = new UserProfile();
 
         // mandatory fields
         profile.setId(user.getUserId());
@@ -38,6 +38,4 @@ public class DemoProfile extends CommonProfile
 
         return profile;
     }
-
-
 }

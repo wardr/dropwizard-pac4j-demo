@@ -5,7 +5,6 @@ import com.uberlogik.demo.db.tables.records.UserPermissionRecord;
 import com.uberlogik.pac4j.auth.DBAuthenticator;
 import com.uberlogik.pac4j.auth.SaltedPassword;
 import org.jooq.Configuration;
-import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 import org.pac4j.core.context.WebContext;
@@ -38,7 +37,7 @@ public class JooqAuthenticator extends DBAuthenticator<User>
     protected Collection<User> getUsers(String username)
     {
         return DSL.using(jooqConfig).selectFrom(USER)
-                .where(USER.EMAIL.eq(username.toLowerCase()))
+                .where(USER.USERNAME.eq(username.toLowerCase()))
                 .fetch().into(User.class);
     }
 
@@ -78,19 +77,19 @@ public class JooqAuthenticator extends DBAuthenticator<User>
     @Override
     protected CommonProfile profileOf(User user, Map<String, Set<String>> rolePermissions, String clientName)
     {
-        return DemoProfile.of(user, rolePermissions, clientName);
+        return UserProfile.of(user, rolePermissions, clientName);
     }
 
     @Override
     protected String errorNoUsername()
     {
-        return "Email address required";
+        return "Username required";
     }
 
     @Override
     protected String errorNoSuchUser()
     {
-        return "Invalid email address";
+        return "Invalid Username address";
     }
 
     @Override
