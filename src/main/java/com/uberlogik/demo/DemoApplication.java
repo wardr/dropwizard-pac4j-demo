@@ -1,5 +1,7 @@
 package com.uberlogik.demo;
 
+import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
+
 import com.bendb.dropwizard.jooq.JooqBundle;
 import com.bendb.dropwizard.jooq.JooqFactory;
 import com.uberlogik.demo.client.resources.ErrorResource;
@@ -7,18 +9,18 @@ import com.uberlogik.demo.client.resources.RootResource;
 import com.uberlogik.demo.client.resources.RuntimeExceptionMapper;
 import com.uberlogik.demo.client.resources.UserResource;
 import com.uberlogik.demo.security.SecurityBundle;
+
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
-import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 
 public class DemoApplication extends Application<DemoConfiguration>
 {
-    private final SecurityBundle<DemoConfiguration> securityBundle = new SecurityBundle<DemoConfiguration>();
+    public static final String SESSION_KEY = "s";
 
-    final JooqBundle<DemoConfiguration> dbBundle = new JooqBundle<DemoConfiguration>()
+    private final JooqBundle<DemoConfiguration> dbBundle = new JooqBundle<DemoConfiguration>()
     {
         /**
          * Required override to define default DataSourceFactory.
@@ -35,8 +37,9 @@ public class DemoApplication extends Application<DemoConfiguration>
             return configuration.jooq();
         }
     };
-
-
+    
+    private final SecurityBundle<DemoConfiguration> securityBundle = new SecurityBundle<DemoConfiguration>(dbBundle);
+    
     public static void main(String[] args) throws Exception
     {
         new DemoApplication().run(args);
@@ -52,6 +55,7 @@ public class DemoApplication extends Application<DemoConfiguration>
     public void initialize(Bootstrap<DemoConfiguration> bootstrap)
     {
         bootstrap.addBundle(new ViewBundle<DemoConfiguration>());
+        // this MUST be initialized befure the security bundle!
         bootstrap.addBundle(dbBundle);
         bootstrap.addBundle(securityBundle);
     }
@@ -59,8 +63,8 @@ public class DemoApplication extends Application<DemoConfiguration>
     @Override
     public void run(DemoConfiguration config, Environment env) throws Exception
     {
-        securityBundle.build(env, dbBundle.getConfiguration());
-
+        env.getApplicationContext().getServletContext().getSessionCookieConfig().setName(SESSION_KEY);
+        
         // HTML Pages
         env.jersey().register(new RootResource(securityBundle.getFormClient()));
         env.jersey().register(new UserResource());

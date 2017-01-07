@@ -65,7 +65,7 @@ public class RootResource
     // Example of a page that only authenticated AND authorized users can access
     @GET
     @Path("/protected")
-    @Pac4JSecurity(clients = "form", authorizers = "superuser")
+    @Pac4JSecurity(authorizers = "superuser")
     @Produces({MediaType.TEXT_HTML})
     public View protectedExample(@Pac4JProfile UserProfile profile)
     {
