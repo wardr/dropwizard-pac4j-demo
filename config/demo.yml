@@ -5,6 +5,8 @@ server:
 
 logging:
   level: INFO
+  loggers:
+    org.pac4j: DEBUG
 
 database:
   driverClass: com.mysql.jdbc.Driver
