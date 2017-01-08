@@ -9,13 +9,13 @@ logging:
     org.pac4j: DEBUG
 
 database:
-  driverClass: com.mysql.jdbc.Driver
+  driverClass: org.h2.Driver
   user: demo_user
   password: demopassword
-  url: jdbc:mysql://localhost:3306/demo
+  url: jdbc:h2:./db
 
 jooq:
-  dialect: MYSQL
+  dialect: H2
   logExecutedSql: yes
   renderSchema: yes
   renderNameStyle: QUOTED

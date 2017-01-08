@@ -13,3 +13,4 @@ dependency-reduced-pom.xml
 
 # Generated when running app
 logs/
+db.*.db
