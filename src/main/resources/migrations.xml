@@ -1,0 +1,127 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+  <changeSet author="wardr" id="1">
+  
+    <createTable tableName="user">
+      <column name="user_id" type="INT(10)" autoIncrement="true" >
+        <constraints primaryKey="true" />
+      </column>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP()" >
+        <constraints nullable="false" />
+      </column>
+      <column name="username" type="VARCHAR(60)">
+        <constraints nullable="false" unique="true" />
+      </column>
+      <column name="email" type="VARCHAR(513)">
+        <constraints nullable="false" />
+      </column>
+      <column name="pwd" type="VARCHAR(100)">
+        <constraints nullable="false" />
+      </column>
+      <column name="pwd_salt" type="VARCHAR(48)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="role">
+      <column name="role_id" type="INT(10)">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="name" type="VARCHAR(50)">
+        <constraints nullable="false" unique="true" />
+      </column>
+      <column name="display_name" type="VARCHAR(50)">
+        <constraints nullable="false" />
+      </column>
+      <column name="description" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="permission">
+      <column name="permission_id" type="INT(10)">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <!-- permission name should be in the form resource:action, for example 'article:edit' -->
+      <column name="name" type="VARCHAR(100)">
+        <constraints nullable="false" unique="true" />
+      </column>
+      <column name="description" type="VARCHAR(255)" />
+    </createTable>
+
+    <createTable tableName="role_permission">
+      <column name="role_id" type="INT(10)">
+        <constraints nullable="false" referencedTableName="ROLE" referencedColumnNames="ROLE_ID" foreignKeyName="fk_role_permission_role_id" deleteCascade="true" />
+      </column>
+      <column name="permission_id" type="INT(10)">
+        <constraints nullable="false" referencedTableName="PERMISSION" referencedColumnNames="PERMISSION_ID" foreignKeyName="fk_role_permission_permission_id" deleteCascade="true" />
+      </column>
+    </createTable>
+
+    <addPrimaryKey tableName="role_permission" columnNames="ROLE_ID, PERMISSION_ID" />
+
+    <createTable tableName="user_role">
+      <column name="user_id" type="INT(10)">
+        <constraints nullable="false" referencedTableName="USER" referencedColumnNames="USER_ID" foreignKeyName="fk_user_role_user_id" deleteCascade="true" />
+      </column>
+      <column name="role_id" type="INT(10)">
+        <constraints nullable="false" referencedTableName="ROLE" referencedColumnNames="ROLE_ID" foreignKeyName="fk_user_role_role_id" deleteCascade="true" />
+      </column>
+    </createTable>
+
+    <addPrimaryKey tableName="user_role" columnNames="USER_ID, ROLE_ID" />
+
+    <createView viewName="user_permission">
+      SELECT
+        ur.user_id as user_id,
+        r.name AS role_name,
+        p2.permission_name
+      FROM user_role AS ur
+        LEFT JOIN role r ON (r.role_id = ur.role_id)
+        LEFT JOIN
+        (SELECT
+           rp.role_id AS role_id,
+           p.name AS permission_name
+         FROM role_permission AS rp
+           LEFT JOIN permission p ON p.permission_id = rp.permission_id) AS p2
+          ON r.role_id = p2.role_id;
+    </createView>
+
+    <insert tableName="role">
+      <column name="role_id" value="1" />
+      <column name="name" value="superuser" />
+      <column name="display_name" value="superuser" />
+      <column name="description" value="Administrator" />
+    </insert>
+
+    <insert tableName="permission">
+      <column name="permission_id" value="1" />
+      <column name="name" value="admin:all" />
+      <column name="description" value="Full access to admin" />
+    </insert>
+
+    <insert tableName="role_permission">
+      <column name="permission_id" value="1" />
+      <column name="role_id" value="1" />
+    </insert>
+
+    <insert tableName="user">
+      <column name="user_id" value="1" />
+      <column name="username" value="admin" />
+      <column name="email" value="admin@example.com" />
+      
+      <!-- adminpassword -->
+      <column name="pwd" value="z0wmz0eoXY+YFZikGv+0NAlhC3RscchDThZJBJv5fzs=" />
+      <column name="pwd_salt" value="Aq5hfr34Y1cFAC6Tmzx6kQ==" />
+    </insert>
+
+    <insert tableName="user_role">
+      <column name="user_id" value="1" />
+      <column name="role_id" value="1" />
+    </insert>
+  </changeSet>
+</databaseChangeLog>

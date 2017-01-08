@@ -15,6 +15,7 @@
         <jooq.version>3.8.6</jooq.version>
         <driver.version>1.4.193</driver.version>
         <pac4j.version>1.9.4</pac4j.version>
+        <codegen.db.url>jdbc:h2:file:${project.build.directory}/db</codegen.db.url>
     </properties>
 
     <dependencies>
@@ -32,6 +33,11 @@
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-views-mustache</artifactId>
+            <version>${dropwizard.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-migrations</artifactId>
             <version>${dropwizard.version}</version>
         </dependency>
 
@@ -79,6 +85,37 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>3.5.1</version>
+
+                <executions>
+                    <execution>
+                        <!-- this will be executed just before jooq codegen -->
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>com.h2database</groupId>
+                        <artifactId>h2</artifactId>
+                        <version>${driver.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <configuration>
+                    <changeLogFile>${basedir}/src/main/resources/migrations.xml</changeLogFile>
+                    <driver>org.h2.Driver</driver>
+                    <url>${codegen.db.url}</url>
+                    <username>u</username>
+                    <password></password>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-codegen-maven</artifactId>
                 <version>${jooq.version}</version>
@@ -102,12 +139,12 @@
                 <configuration>
                     <jdbc>
                         <driver>org.h2.Driver</driver>
-                        <url>jdbc:h2:${basedir}/db</url>
-                        <user>demo_user</user>
-                        <password>demopassword</password>
+                        <url>${codegen.db.url}</url>
+                        <user>u</user>
+                        <password></password>
                     </jdbc>
                     <generator>
-                        <name>org.jooq.util.DefaultGenerator</name>
+                        <name>org.jooq.util.JavaGenerator</name>
                         <generate>
                             <!-- see section 6.2 of docs for additional options -->
                             <deprecated>false</deprecated>

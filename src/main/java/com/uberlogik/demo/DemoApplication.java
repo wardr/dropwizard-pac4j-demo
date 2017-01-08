@@ -12,6 +12,8 @@ import com.uberlogik.demo.security.SecurityBundle;
 
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.db.PooledDataSourceFactory;
+import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
@@ -40,6 +42,13 @@ public class DemoApplication extends Application<DemoConfiguration>
     
     private final SecurityBundle<DemoConfiguration> securityBundle = new SecurityBundle<DemoConfiguration>(dbBundle);
     
+    private final MigrationsBundle<DemoConfiguration> migrationsBundle = new MigrationsBundle<DemoConfiguration>() {
+        @Override
+        public PooledDataSourceFactory getDataSourceFactory(DemoConfiguration configuration) {
+            return configuration.dataSourceFactory();
+        }
+    };
+    
     public static void main(String[] args) throws Exception
     {
         new DemoApplication().run(args);
@@ -58,6 +67,7 @@ public class DemoApplication extends Application<DemoConfiguration>
         // this MUST be initialized befure the security bundle!
         bootstrap.addBundle(dbBundle);
         bootstrap.addBundle(securityBundle);
+        bootstrap.addBundle(migrationsBundle);
     }
 
     @Override
