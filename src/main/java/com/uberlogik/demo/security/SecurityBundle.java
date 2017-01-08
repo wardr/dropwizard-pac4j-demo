@@ -1,11 +1,12 @@
 package com.uberlogik.demo.security;
 
 import org.pac4j.core.authorization.authorizer.RequireAnyRoleAuthorizer;
+import org.pac4j.core.credentials.password.SpringSecurityPasswordEncoder;
 import org.pac4j.dropwizard.Pac4jBundle;
 import org.pac4j.dropwizard.Pac4jFactory;
 import org.pac4j.dropwizard.Pac4jFactory.FilterConfiguration;
 import org.pac4j.http.client.indirect.FormClient;
-import org.pac4j.jax.rs.annotations.Pac4JSecurity;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 import com.bendb.dropwizard.jooq.JooqBundle;
 import com.uberlogik.demo.DemoConfiguration;
@@ -44,6 +45,7 @@ public class SecurityBundle<T extends Configuration> extends Pac4jBundle<T>
         
         // dbBundle should already be initialized now
         JooqAuthenticator authenticator = new JooqAuthenticator(dbBundle.getConfiguration());
+        authenticator.setPasswordEncoder(new SpringSecurityPasswordEncoder(new Pbkdf2PasswordEncoder()));
         FormClient formClient = new FormClient("/login", authenticator);
         formClient.setName(FORM_CLIENT_NAME);
         

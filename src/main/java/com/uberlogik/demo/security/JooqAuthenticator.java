@@ -1,9 +1,14 @@
 package com.uberlogik.demo.security;
 
-import com.uberlogik.demo.db.tables.pojos.User;
-import com.uberlogik.demo.db.tables.records.UserPermissionRecord;
-import com.uberlogik.pac4j.auth.DBAuthenticator;
-import com.uberlogik.pac4j.auth.SaltedPassword;
+import static com.uberlogik.demo.db.Tables.USER;
+import static com.uberlogik.demo.db.Tables.USER_PERMISSION;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.jooq.Configuration;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
@@ -12,10 +17,9 @@ import org.pac4j.core.profile.CommonProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-
-import static com.uberlogik.demo.db.Tables.USER;
-import static com.uberlogik.demo.db.Tables.USER_PERMISSION;
+import com.uberlogik.demo.db.tables.pojos.User;
+import com.uberlogik.demo.db.tables.records.UserPermissionRecord;
+import com.uberlogik.pac4j.auth.DBAuthenticator;
 
 public class JooqAuthenticator extends DBAuthenticator<User>
 {
@@ -42,9 +46,9 @@ public class JooqAuthenticator extends DBAuthenticator<User>
     }
 
     @Override
-    protected SaltedPassword saltedPassword(User user)
+    protected String password(User user)
     {
-        return SaltedPassword.of(user.getPwd(), user.getPwdSalt());
+        return user.getPassword();
     }
 
     protected Map<String, Set<String>> getRolePermissions(User user)
