@@ -19,10 +19,7 @@
       <column name="email" type="VARCHAR(513)">
         <constraints nullable="false" />
       </column>
-      <column name="pwd" type="VARCHAR(100)">
-        <constraints nullable="false" />
-      </column>
-      <column name="pwd_salt" type="VARCHAR(48)">
+      <column name="password" type="VARCHAR(100)">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -114,9 +111,8 @@
       <column name="username" value="admin" />
       <column name="email" value="admin@example.com" />
       
-      <!-- adminpassword -->
-      <column name="pwd" value="z0wmz0eoXY+YFZikGv+0NAlhC3RscchDThZJBJv5fzs=" />
-      <column name="pwd_salt" value="Aq5hfr34Y1cFAC6Tmzx6kQ==" />
+      <!-- adminpassword encoded with PBKDF2 -->
+      <column name="password" value="08d80ad8df4bb6bf410eaf85326647e3658b643ce12c1d9fb66ffed86a17bc3a98ec6369922ca35d" />
     </insert>
 
     <insert tableName="user_role">
